@@ -23,7 +23,8 @@ class UsersHandler(RequestHandler):
             url = str(usersURL + "/")
             obj = user.serializeUser( url );
             res.append(obj)
-        self.response.content_type = 'text/plain'
+        # self.response.content_type = 'text/plain'
+        self.response.headers.add('Content-Type', "application/json")
         self.response.status_int = 200;
         self.response.out.write(json.dumps(res))
         return
@@ -61,117 +62,90 @@ class UsersHandler(RequestHandler):
             self.response.write( user.serializeUser(usersURL) )
         except:
             self.response.write(json.dumps({"error": "Cannot write response."}));
+            self.response.headers.add('Content-Type', "application/json");
             self.response.status_int = 500;
             return
 
-# Boat identified by id
-# class BoatHandler(RequestHandler):
-#     def get(self, boat_id):
-#         print("BoatHandler: GET 1: " + boat_id)
-#         # Convert boat_id to ndb object
-#         try:
-#             boat_key = ndb.Key(urlsafe=boat_id);
-#             boat = boat_key.get()
-#             if (boat == None):
-#                 raise TypeError;
-#         except:
-#             self.response.write(json.dumps({"error": "Error getting boat"}));
-#             self.response.status_int = 404;
-#             return
-#
-#         # Send response
-#         boatURL = boatsURL + "/" + boat_id;
-#         self.response.content_type = 'application/json'
-#         self.response.status_int = 200;
-#         res = {
-#             "url": boatURL,
-#             "id": boat_id,
-#             "name": boat.name,
-#             "type": boat.boat_type,
-#             "length": boat.length,
-#             "at_sea": boat.at_sea,
-#         }
-#         self.response.write(json.dumps(res))
+# User identified by id
+class UserHandler(RequestHandler):
+    def get(self, user_id):
+        print("UserHandler: GET 1: " + user_id)
+        # Convert boat_id to ndb object
+        try:
+            user_key = ndb.Key(urlsafe=user_id);
+            user = user_key.get()
+            if (user == None):
+                raise TypeError;
+        except:
+            self.response.write(json.dumps({"error": "Error getting user"}));
+            self.response.headers.add('Content-Type', "application/json");
+            self.response.status_int = 404;
+            return
 
-    # def patch(self, boat_id):
-    #     print("BoatHandler: PATCH")
-    #
-    #     try:
-    #         # Convert boat_id to ndb object
-    #         boat_key = ndb.Key(urlsafe=boat_id);
-    #         boat = boat_key.get()
-    #         if (boat == None):
-    #             raise TypeError("Boat is of type none")
-    #     except:
-    #         self.response.write(json.dumps({"error": "Invalid Boat ID"}));
-    #         self.response.status_int = 404;
-    #         return;
-    #     # Get json from Request Body
-    #     try:
-    #         req = self.request.body;
-    #         obj = json.loads(req);
-    #     except:
-    #         self.response.write(json.dumps({"error": "Invalid inputs"}));
-    #         self.response.status_int = 400;
-    #         return
-    #
-    #     # Iterate through each json Key before saving
-    #     try:
-    #         saveObject = False;     # Update to True if new information given
-    #         for key in obj:
-    #             # Check that key is a valid input
-    #             if (key == "name"):
-    #                 boat.name = obj["name"];
-    #                 saveObject = True;
-    #             elif (key == "type"):
-    #                 boat.boat_type = obj["type"];
-    #                 saveObject = True;
-    #             elif (key == "length"):
-    #                 boat.length = int(obj["length"]);
-    #                 saveObject = True;
-    #             else:
-    #                 saveObject = False;
-    #                 # Invalid Information Given in json
-    #                 self.response.write(json.dumps({"error": "Invalid inputs"}));
-    #                 self.response.status_int = 400;
-    #                 return
-    #     except (TypeError, ValueError):
-    #         self.response.write(json.dumps({"error": "Invalid inputs"}));
-    #         self.response.status_int = 400;
-    #         return
-    #
-    #     try:
-    #         # Save data if saveObject = True
-    #         if (saveObject == False):
-    #             self.response.write(json.dumps({"error": "Invalid inputs"}));
-    #             self.response.status_int = 400;
-    #             return
-    #         else:
-    #             boat.put()
-    #     except:
-    #         self.response.write(json.dumps({"error": "Cannot save boat."}));
-    #         self.response.status_int = 400;
-    #         return
-    #
-    #     # Send response
-    #     try:
-    #         boat_id = boat.key.urlsafe()
-    #         boatURL = boatsURL + "/" + boat_id;
-    #         self.response.content_type = 'application/json'
-    #         self.response.status_int = 200;
-    #         res = {
-    #             "url": boatURL,
-    #             "id": boat_id,
-    #             "name": boat.name,
-    #             "type": boat.boat_type,
-    #             "length": boat.length,
-    #             "at_sea": boat.at_sea,
-    #         }
-    #         self.response.write(json.dumps(res))
-    #     except:
-    #         self.response.write(json.dumps({"error": "Cannot write response"}));
-    #         self.response.status_int = 500;
-    #         return
+        # Send response
+        url = str(usersURL + "/")
+        res = user.serializeUser( url );
+        # userURL = usersURL + "/" + user_id;
+        self.response.content_type = 'application/json'
+        self.response.status_int = 200;
+        self.response.write(json.dumps(res))
+
+    def patch(self, user_id):
+        print("UserHandler: PATCH")
+
+        try:
+            # Convert boat_id to ndb object
+            user_key = ndb.Key(urlsafe=user_id);
+            user = user_key.get()
+            if (user == None):
+                print("UserHandler: User is of type None")
+                raise TypeError("User is of type None")
+        except:
+            self.response.write(json.dumps({"error": "Invalid User ID"}));
+            self.response.headers.add('Content-Type', "application/json");
+            self.response.status_int = 404;
+            return;
+        # Get json from Request Body
+        try:
+            req = self.request.body;
+            obj = json.loads(req);
+            print(obj)
+            if (User.validateUserPatchRequest( obj )):
+                # User req contains exactly what is required
+                # Submit Patch
+                if (obj["first_name"] != None):
+                    user.first_name = obj["first_name"]
+                if (obj["family_name"] != None):
+                    user.family_name = obj["family_name"]
+                if (obj["group"] != None):
+                    user.group = getGroupEnumFromString(obj["group"])
+                user.put()
+            else:
+                print("UserHandler: invalid")
+                raise TypeError
+        except(TypeError):
+            print({"error": "Invalid inputs"})
+            self.response.write(json.dumps({"error": "Invalid inputs"}));
+            self.response.headers.add('Content-Type', "application/json");
+            self.response.status_int = 400;
+            return
+        except:
+            self.response.write(json.dumps({"error": "Cannot save entity"}));
+            self.response.headers.add('Content-Type', "application/json");
+            self.response.status_int = 400;
+            return
+
+        # Send response
+        try:
+            self.response.content_type = 'application/json'
+            self.response.status_int = 201;
+            self.response.write( user.serializeUser(usersURL) )
+            return
+        except:
+            self.response.write(json.dumps({"error": "Cannot write response."}));
+            self.response.headers.add('Content-Type', "application/json");
+            self.response.status_int = 500;
+            return
     #
     # def delete(self, boat_id):
     #     print("BoatHandler: DELETE 1")
@@ -210,6 +184,7 @@ class UsersHandler(RequestHandler):
     #     except:
     #         # Send Response
     #         self.response.write(json.dumps({"error": "Cannot update slip."}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 500;
     #         return
     #
@@ -218,6 +193,7 @@ class UsersHandler(RequestHandler):
     #         boat_key.delete();
     #     except:
     #         self.response.write(json.dumps({"error": "Cannot delete boat."}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 404;
     #         slip.current_boat = boat_id;
     #         slip.current_boat_url = boatURL;
@@ -244,6 +220,7 @@ class UsersHandler(RequestHandler):
     #         boatURL = boatsURL + "/" + boat_id;
     #     except:
     #         self.response.write(json.dumps({"error": "Invalid inputs"}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 404;
     #         return
     #
@@ -255,6 +232,7 @@ class UsersHandler(RequestHandler):
     #     except:
     #         # print("boat", boat);
     #         self.response.write(json.dumps({"error": "Invalid inputs"}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 404;
     #         return
     #
@@ -262,12 +240,14 @@ class UsersHandler(RequestHandler):
     #     if (boat.at_sea == False):
     #         # print("boat", boat);
     #         self.response.write(json.dumps({"error": "Boat already docked."}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 403;
     #         return
     #
     #     # Verify Slip Empty, reject if not
     #     if (slip.current_boat != None) or (slip.current_boat_url != None) or (slip.arrival_date != None):
     #         self.response.write(json.dumps({"error": "Slip already occupied."}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 403;
     #         return
     #
@@ -278,6 +258,7 @@ class UsersHandler(RequestHandler):
     #         obj = json.loads(req);
     #     except:
     #         self.response.write(json.dumps({"error": "Invalid Request."}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 400;
     #         return
     #
@@ -295,10 +276,12 @@ class UsersHandler(RequestHandler):
     #                 saveObject = False;
     #                 # Invalid Information Given in json
     #                 self.response.write(json.dumps({"error": "Invalid Request."}));
+    #                 self.response.headers.add('Content-Type', "application/json");
     #                 self.response.status_int = 400;
     #                 return
     #     except (TypeError, ValueError):
     #         self.response.write(json.dumps({"error": "Invalid Request."}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 400;
     #         return
     #
@@ -306,6 +289,7 @@ class UsersHandler(RequestHandler):
     #     try:
     #         if (saveObject == False):
     #             self.response.write(json.dumps({"error": "Invalid Request."}));
+    #             self.response.headers.add('Content-Type', "application/json");
     #             self.response.status_int = 400;
     #             return
     #         else:
@@ -314,6 +298,7 @@ class UsersHandler(RequestHandler):
     #             slip.put()
     #     except:
     #         self.response.write(json.dumps({"error": "Error docking boat."}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 500;
     #         return
     #
@@ -323,6 +308,7 @@ class UsersHandler(RequestHandler):
     #         boat.put();
     #     except:
     #         self.response.write(json.dumps({"error": "Error docking boat."}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 500;
     #         return
     #
@@ -340,6 +326,7 @@ class UsersHandler(RequestHandler):
     #         departure_date = datetime.strptime(datestring, "%m/%d/%Y").date();
     #     except:
     #         self.response.write(json.dumps({"error": "Invalid `departure` parameter"}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 400;
     #         return
     #
@@ -352,6 +339,7 @@ class UsersHandler(RequestHandler):
     #             raise TypeError
     #     except:
     #         self.response.write(json.dumps({"error": "Invalid inputs"}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 400;
     #         return
     #
@@ -362,18 +350,21 @@ class UsersHandler(RequestHandler):
     #             raise TypeError
     #     except:
     #         self.response.write(json.dumps({"error": "Invalid inputs"}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 400;
     #         return
     #
     #     # Verify Boat Not At Sea, reject if not
     #     if (boat.at_sea == True):
     #         self.response.write(json.dumps({"error": "Boat already at sea"}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 400;
     #         return
     #
     #     # Verify Slip is NOT Empty, reject if not
     #     if (slip.current_boat == None) and (slip.current_boat_url == None) and (slip.arrival_date == None):
     #         self.response.write(json.dumps({"error": "Slip already empty"}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 400;
     #         return
     #         #### Cases not tested: when any of the three clauses are None...
@@ -385,6 +376,7 @@ class UsersHandler(RequestHandler):
     #     except:
     #         # print("Cannot update boat");
     #         self.response.write(json.dumps({"error": "Cannot update boat"}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 400;
     #         return
     #
@@ -408,6 +400,7 @@ class UsersHandler(RequestHandler):
     #
     #         # Send Response
     #         self.response.write(json.dumps({"error": "Cannot update slip."}));
+    #         self.response.headers.add('Content-Type', "application/json");
     #         self.response.status_int = 400;
     #         return
     #

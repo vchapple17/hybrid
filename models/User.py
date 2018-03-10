@@ -61,3 +61,41 @@ class User(ndb.Model):
         except:
             # Too many attributes OR too few attributes
             return False
+
+    @classmethod
+    def validateUserPatchRequest(self, obj):
+        if (obj == {}):
+            return False
+        try:
+            # Reject extra keys
+            first_name = None
+            family_name = None
+            group = None
+
+            for key in obj.keys():
+                # Check that key is a valid input ONLY
+                if (key == "first_name"):
+                    first_name = obj["first_name"];
+                elif (key == "family_name"):
+                    family_name = obj["family_name"];
+                elif (key == "group"):
+                    group = obj["group"];
+                else:
+                    # Invalid Information Given in json
+                    raise TypeError
+
+            # Ensure at least one variable was set
+            if (first_name == None ) and (family_name == None ) and (group == None ):
+                raise TypeError
+
+            # Check Group Enum String is valid enum
+            if ( group != None ):
+                if (getGroupEnumFromString(group) == None):
+                    raise TypeError
+
+            # Passed all tests, so valid
+            return True
+
+        except:
+            # Too many attributes or too few attributes
+            return False

@@ -1,6 +1,6 @@
 baseURL = "http://localhost:8080";
 usersPath = "/users"
-usersURL = baseURL + "/users"
+usersURL = baseURL + usersPath
 devicesURL = baseURL + "/devices"
 
 MAX_STRING_LENGTH = 255
