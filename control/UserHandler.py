@@ -146,22 +146,22 @@ class UserHandler(RequestHandler):
             self.response.headers.add('Content-Type', "application/json");
             self.response.status_int = 500;
             return
-    #
-    # def delete(self, boat_id):
-    #     print("BoatHandler: DELETE 1")
-    #
-    #     # Convert boat_id to ndb KEY
-    #     try:
-    #         boat_key = ndb.Key(urlsafe=boat_id);
-    #         boat = boat_key.get()
-    #         if (boat == None):
-    #             raise TypeError
-    #     except:
-    #         self.response.status_int = 204;
-    #         return
-    #
-    #
-    #     # occupied_slip
+
+    def delete(self, user_id):
+        print("UserHandler: DELETE 1")
+
+        # Convert user_id to ndb KEY
+        try:
+            user_key = ndb.Key(urlsafe=user_id);
+            user = user_key.get()
+            if (user == None):
+                raise TypeError
+        except:
+            self.response.status_int = 204;
+            return
+
+
+        # occupied_slip
     #     try:
     #         # Find Boat's Slip and Remove
     #         query = Slip.query()
@@ -188,22 +188,24 @@ class UserHandler(RequestHandler):
     #         self.response.status_int = 500;
     #         return
     #
-    #     # Delete boat entity
-    #     try:
-    #         boat_key.delete();
-    #     except:
-    #         self.response.write(json.dumps({"error": "Cannot delete boat."}));
-    #         self.response.headers.add('Content-Type', "application/json");
-    #         self.response.status_int = 404;
-    #         slip.current_boat = boat_id;
-    #         slip.current_boat_url = boatURL;
-    #         slip.arrival_date = boatDate;
-    #         slip.put()
-    #         return
-    #
-    #     # # Send response that boat is deleted
-    #     self.response.status_int = 204;
-    #     return;
+        # Delete boat entity
+        try:
+            user_key.delete();
+        except:
+            self.response.write(json.dumps({"error": "Cannot delete entity."}));
+            self.response.headers.add('Content-Type', "application/json");
+            self.response.status_int = 404;
+            #
+            # slip.current_boat = boat_id;
+            # slip.current_boat_url = boatURL;
+            # slip.arrival_date = boatDate;
+            # slip.put()
+            return
+
+        # # Send response that boat is deleted
+        self.response.status_int = 204;
+        self.response.content_type = None;
+        return;
 
 
 # class DockingHandler(RequestHandler):
