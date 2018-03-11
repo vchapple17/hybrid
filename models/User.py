@@ -1,7 +1,7 @@
 from google.appengine.ext import ndb
 from google.appengine.ext.ndb import msgprop
 
-# from DeviceList import DeviceList
+from Device import Device
 from Group import Group, getGroupEnumFromString
 from datetime import datetime
 import json
@@ -10,8 +10,8 @@ class User(ndb.Model):
     first_name = ndb.StringProperty()
     family_name = ndb.StringProperty()
     group = msgprop.EnumProperty(Group)
-    device_id = ndb.StringProperty()
-    start_datetime = ndb.DateTimeProperty()
+    device_id = ndb.StringProperty(default=None)
+    start_datetime = ndb.DateTimeProperty(default=None)
 
     def serializeUser(self, pre_url):
         if (type(pre_url) != type("")):
@@ -29,6 +29,49 @@ class User(ndb.Model):
         else:
             ret["start_datetime"] = None
         return json.dumps(ret);
+
+    def checkOutDevice(self, device_id, start_datetime):
+        if (type(device_id) != type("")):
+            return None
+        if (type(start_datetime) != type(datetime.now())):
+            return None
+
+        # Check user does not already have a device
+        if (self.device_id  != None):
+            return None
+
+        # Verify Device Exists and is available
+        try:
+            device_key = ndb.Key(urlsafe=device_id);
+            device = device_key.get()
+            if (device == None):
+                raise TypeError
+            if (device.is_rented == True):
+                raise TypeError
+        except(TypeError):
+            # device does not exist or is unavailable
+            return None
+        except:
+            print("Error checkOutDevice")
+            return None
+
+        try:
+            # Device Exists and is available
+            device.is_rented = True
+            device.put()
+        except:
+            # Error updating device
+            return None
+
+        try:
+            self.device_id = device_id
+            self.start_datetime = start_datetime
+        except:
+            # Error updating device
+            return None
+
+        return True
+
 
     @classmethod
     def validateUserPostRequest(self, obj):

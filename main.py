@@ -5,8 +5,9 @@ sys.path.append("./control/")
 
 import webapp2
 from webapp2 import Route
-from UserHandler import UsersHandler#, UserHandler, RentingHandler
-# from device_handler import DevicesHandler, DeviceHandler
+from UserHandler import UsersHandler, UserHandler
+from RentalHandler import RentalHandler
+from DeviceHandler import DevicesHandler, DeviceHandler
 from webapp2_extras.routes import RedirectRoute, PathPrefixRoute
 
 DEBUG_FLAG = True
@@ -27,14 +28,16 @@ application = webapp2.WSGIApplication([
         Route('/', handler=UsersHandler, name='users'),
         Route('/<user_id:([A-Z]|[a-z]|[0-9]|[-._])+(/)?>', handler=UserHandler, name='user'),
 
-        # Route('/<user_id:([A-Z]|[a-z]|[0-9]|[-._])+>/users/<device_id:([A-Z]|[a-z]|[0-9]|[-._])+(/)?>', handler=RentingHandler, name='renting'),
+        Route('/<user_id:([A-Z]|[a-z]|[0-9]|[-._])+>/devices/<device_id:([A-Z]|[a-z]|[0-9]|[-._])+(/)?>', handler=RentalHandler, name='rental'),
 
     ]),
 
-    # Route('/devices', handler=DevicesHandler, name='devices'),
-    # PathPrefixRoute( '/devices',[
-    #     Route('/', handler=DevicesHandler, name='devices'),
-    #     Route('/<device_id:([A-Z]|[a-z]|[0-9]|[-._])+(/)?>', handler=DeviceHandler, name='device'),
-    # ]),
+    Route('/devices', handler=DevicesHandler, name='devices'),
+    PathPrefixRoute( '/devices',[
+        Route('/', handler=DevicesHandler, name='devices'),
+        Route('/<device_id:([A-Z]|[a-z]|[0-9]|[-._])+(/)?>', handler=DeviceHandler, name='device'),
+
+        Route('/<device_id:([A-Z]|[a-z]|[0-9]|[-._])+>/users/<user_id:([A-Z]|[a-z]|[0-9]|[-._])+(/)?>', handler=RentalHandler, name='rental'),
+    ]),
 
 ], debug=DEBUG_FLAG)
