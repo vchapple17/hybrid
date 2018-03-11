@@ -1,2 +1,4 @@
 
 *.pyc
+
+.pytest_cache/v/cache/lastfailed
