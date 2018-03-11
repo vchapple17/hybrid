@@ -72,6 +72,45 @@ class User(ndb.Model):
 
         return True
 
+    def checkInDevice(self, device_id):
+        if (type(device_id) != type("")):
+            return None
+
+        # Check user has this device
+        if (self.device_id != str(device_id)):
+            return None
+
+        # Verify Device Exists and is resent
+        try:
+            device_key = ndb.Key(urlsafe=device_id);
+            device = device_key.get()
+            if (device == None):
+                raise TypeError
+            if (device.is_rented == False):
+                raise TypeError
+        except(TypeError):
+            # device does not exist or is not checked out
+            return None
+        except:
+            print("Error checkOutDevice")
+            return None
+
+        try:
+            # Device Exists and is available
+            device.is_rented = False
+            device.put()
+        except:
+            # Error updating device
+            return None
+
+        try:
+            self.device_id = None
+            self.start_datetime = None
+        except:
+            # Error updating device
+            return None
+
+        return True
 
     @classmethod
     def validateUserPostRequest(self, obj):
