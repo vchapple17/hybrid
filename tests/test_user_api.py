@@ -69,39 +69,6 @@ class UserAPITestCase( unittest.TestCase ):
             self.assertEqual(payload['device_id'], None)
             self.assertEqual(payload['start_datetime'], None)
 
-        # for n in xrange(NUM_TESTS):
-        #     # Create
-        #     url = usersURL
-        #     data = {
-        #         "first_name": self.v.validRandomString( MAX_STRING_LENGTH ),
-        #         "family_name": self.v.validRandomString( MAX_STRING_LENGTH ),
-        #         "group": randomGroupEnumString()
-        #     }
-        #     edata = json.dumps(data)
-        #     headers = {'Content-Type': 'application/json'}
-        #
-        #     # Send
-        #     res = urlfetch.fetch(
-        #         url=url,
-        #         payload=edata,
-        #         method=urlfetch.POST,
-        #         headers=headers
-        #     )
-        #
-        #     # Check Return
-        #     payload = json.loads(res.content)
-        #     self.assertEqual("error" in payload.keys(), False)
-        #
-        #     self.assertEqual("id" in payload.keys(), True)
-        #     self.assertEqual("url" in payload.keys(), True)
-        #     user_id = payload["id"]
-        #     self.assertEqual(payload['url'], usersURL + "/" + user_id)
-        #
-        #     self.assertEqual(payload['first_name'], data["first_name"])
-        #     self.assertEqual(payload['family_name'], data["family_name"])
-        #     self.assertEqual(payload['group'], data["group"])
-        #     self.assertEqual(payload['device_id'], None)
-        #     self.assertEqual(payload['start_datetime'], None)
 
     def testPostUserReturnsError(self):
         for n in xrange(NUM_TESTS):
@@ -183,6 +150,10 @@ class UserAPITestCase( unittest.TestCase ):
                 obj = json.loads(i)
                 self.assertEqual(type(obj), dict)
                 self.assertEqual('error' in obj.keys(), False)
+                self.assertEqual("id" in payload.keys(), True)
+                self.assertEqual("url" in payload.keys(), True)
+                user_id = payload["id"]
+                self.assertEqual(payload['url'], usersURL + "/" + user_id)
                 self.assertEqual('first_name' in obj.keys(), True)
                 self.assertEqual('family_name' in obj.keys(), True)
                 self.assertEqual('group' in obj.keys(), True)
@@ -224,6 +195,10 @@ class UserAPITestCase( unittest.TestCase ):
                 obj = json.loads(post_payload[i])
                 self.assertEqual(type(obj), dict)
                 self.assertEqual('error' in obj.keys(), False)
+                self.assertEqual("id" in payload.keys(), True)
+                self.assertEqual("url" in payload.keys(), True)
+                user_id = payload["id"]
+                self.assertEqual(payload['url'], usersURL + "/" + user_id)
                 self.assertEqual('first_name' in obj.keys(), True)
                 self.assertEqual('family_name' in obj.keys(), True)
                 self.assertEqual('group' in obj.keys(), True)
@@ -280,6 +255,10 @@ class UserAPITestCase( unittest.TestCase ):
             post_payload = response.json
             obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
+            self.assertEqual("id" in payload.keys(), True)
+            self.assertEqual("url" in payload.keys(), True)
+            user_id = payload["id"]
+            self.assertEqual(payload['url'], usersURL + "/" + user_id)
             self.assertEqual('first_name' in obj.keys(), True)
             self.assertEqual('family_name' in obj.keys(), True)
             self.assertEqual('group' in obj.keys(), True)
@@ -357,6 +336,10 @@ class UserAPITestCase( unittest.TestCase ):
             post_payload = response.json
             obj2 = json.loads(post_payload)
             self.assertEqual('error' in obj2.keys(), False)
+            self.assertEqual("id" in payload.keys(), True)
+            self.assertEqual("url" in payload.keys(), True)
+            user_id = payload["id"]
+            self.assertEqual(payload['url'], usersURL + "/" + user_id)
             self.assertEqual('first_name' in obj2.keys(), True)
             self.assertEqual('family_name' in obj2.keys(), True)
             self.assertEqual('group' in obj2.keys(), True)
@@ -414,6 +397,10 @@ class UserAPITestCase( unittest.TestCase ):
             post_payload = response.json
             obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
+            self.assertEqual("id" in payload.keys(), True)
+            self.assertEqual("url" in payload.keys(), True)
+            user_id = payload["id"]
+            self.assertEqual(payload['url'], usersURL + "/" + user_id)
             self.assertEqual('first_name' in obj.keys(), True)
             self.assertEqual('family_name' in obj.keys(), True)
             self.assertEqual('group' in obj.keys(), True)
@@ -446,6 +433,10 @@ class UserAPITestCase( unittest.TestCase ):
             post_payload = response.json
             obj2 = json.loads(post_payload)
             self.assertEqual('error' in obj2.keys(), False  )
+            self.assertEqual("id" in payload.keys(), True)
+            self.assertEqual("url" in payload.keys(), True)
+            user_id = payload["id"]
+            self.assertEqual(payload['url'], usersURL + "/" + user_id)
             self.assertEqual('first_name' in obj2.keys(), True)
             self.assertEqual('family_name' in obj2.keys(), True)
             self.assertEqual('group' in obj2.keys(), True)
@@ -496,6 +487,10 @@ class UserAPITestCase( unittest.TestCase ):
             post_payload = response.json
             obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
+            self.assertEqual("id" in payload.keys(), True)
+            self.assertEqual("url" in payload.keys(), True)
+            user_id = payload["id"]
+            self.assertEqual(payload['url'], usersURL + "/" + user_id)
             self.assertEqual('first_name' in obj.keys(), True)
             self.assertEqual('family_name' in obj.keys(), True)
             self.assertEqual('group' in obj.keys(), True)

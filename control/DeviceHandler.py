@@ -7,20 +7,22 @@ import webapp2_extras
 import json
 from google.appengine.ext import ndb
 from datetime import datetime
-from const import baseURL, usersURL
-from User import User
-from Group import getGroupEnumFromString
+from const import baseURL, devicesURL
+from Device import Device
+from Device import Device
+from DeviceModel import getDeviceModelEnumFromString
+from Color import getColorEnumFromString
 
-class UsersHandler(RequestHandler):
+class DevicesHandler(RequestHandler):
     def get(self):
-        print("UsersHandler: GET LIST")
+        print("DevicesHandler: GET LIST")
         # Retrieve boats
-        users = User.query().fetch()
+        devices = Device.query().fetch()
 
         # Send response
         res = []
-        for user in users:
-            obj = user.serializeUser( usersURL );
+        for device in devices:
+            obj = device.serializeDevice( devicesURL );
             res.append(obj)
         # self.response.content_type = 'text/plain'
         self.response.headers.add('Content-Type', "application/json")
@@ -29,17 +31,19 @@ class UsersHandler(RequestHandler):
         return
 
     def post(self):
-        print("UsersHandler: CREATE POST")
+        print("DevicesHandler: CREATE POST")
         # Save Request Body
         try:
             req = self.request.body
             obj = json.loads(req)
 
-            if (User.validateUserPostRequest( obj )):
-                group_enum = getGroupEnumFromString(obj["group"])
-                # User req contains exactly what is required
-                user = User( first_name=obj["first_name"], family_name=obj["family_name"], group=group_enum)
-                user.put()
+            if (Device.validateDevicePostRequest( obj )):
+                color_enum = getColorEnumFromString(obj["color"])
+                model_enum = getDeviceModelEnumFromString(obj["model"])
+                serial_no = obj["serial_no"]
+                # Device req contains exactly what is required
+                device = Device( color=color_enum, model=model_enum, serial_no=serial_no)
+                device.put()
             else:
                 raise TypeError
         except(TypeError):
@@ -58,48 +62,48 @@ class UsersHandler(RequestHandler):
         try:
             self.response.content_type = 'application/json'
             self.response.status_int = 201;
-            self.response.write( user.serializeUser(usersURL) )
+            self.response.write( device.serializeDevice(devicesURL) )
         except:
             self.response.write(json.dumps({"error": "Cannot write response."}));
             self.response.headers.add('Content-Type', "application/json");
             self.response.status_int = 500;
             return
 
-# User identified by id
-class UserHandler(RequestHandler):
-    def get(self, user_id):
-        print("UserHandler: GET 1: " + user_id)
+# Device identified by id
+class DeviceHandler(RequestHandler):
+    def get(self, device_id):
+        print("DeviceHandler: GET 1: " + device_id)
         # Convert boat_id to ndb object
         try:
-            user_key = ndb.Key(urlsafe=user_id);
-            user = user_key.get()
-            if (user == None):
+            device_key = ndb.Key(urlsafe=device_id);
+            device = device_key.get()
+            if (device == None):
                 raise TypeError;
         except:
-            self.response.write(json.dumps({"error": "Error getting user"}));
+            self.response.write(json.dumps({"error": "Error getting device"}));
             self.response.headers.add('Content-Type', "application/json");
             self.response.status_int = 404;
             return
 
         # Send response
-        res = user.serializeUser( usersURL );
-        # userURL = usersURL + "/" + user_id;
+        res = device.serializeDevice( devicesURL );
+        # deviceURL = devicesURL + "/" + device_id;
         self.response.content_type = 'application/json'
         self.response.status_int = 200;
         self.response.write(json.dumps(res))
 
-    def patch(self, user_id):
-        print("UserHandler: PATCH")
+    def patch(self, device_id):
+        print("DeviceHandler: PATCH")
 
         try:
             # Convert boat_id to ndb object
-            user_key = ndb.Key(urlsafe=user_id);
-            user = user_key.get()
-            if (user == None):
-                print("UserHandler: User is of type None")
-                raise TypeError("User is of type None")
+            device_key = ndb.Key(urlsafe=device_id);
+            device = device_key.get()
+            if (device == None):
+                print("DeviceHandler: Device is of type None")
+                raise TypeError("Device is of type None")
         except:
-            self.response.write(json.dumps({"error": "Invalid User ID"}));
+            self.response.write(json.dumps({"error": "Invalid Device ID"}));
             self.response.headers.add('Content-Type', "application/json");
             self.response.status_int = 404;
             return;
@@ -107,19 +111,18 @@ class UserHandler(RequestHandler):
         try:
             req = self.request.body;
             obj = json.loads(req);
-            print(obj)
-            if (User.validateUserPatchRequest( obj )):
-                # User req contains exactly what is required
+            if (Device.validateDevicePatchRequest( obj )):
+                # Device req contains exactly what is required
                 # Submit Patch
-                if (obj["first_name"] != None):
-                    user.first_name = obj["first_name"]
-                if (obj["family_name"] != None):
-                    user.family_name = obj["family_name"]
-                if (obj["group"] != None):
-                    user.group = getGroupEnumFromString(obj["group"])
-                user.put()
+                if (obj["color"] != None):
+                    device.color = getColorEnumFromString(obj["color"])
+                if (obj["model"] != None):
+                    device.model = getDeviceModelEnumFromString(obj["model"])
+                if (obj["serial_no"] != None):
+                    device.serial_no = obj["serial_no"]
+                device.put()
             else:
-                print("UserHandler: invalid")
+                print("DeviceHandler: invalid")
                 raise TypeError
         except(TypeError):
             print({"error": "Invalid inputs"})
@@ -137,7 +140,7 @@ class UserHandler(RequestHandler):
         try:
             self.response.content_type = 'application/json'
             self.response.status_int = 201;
-            self.response.write( user.serializeUser(usersURL) )
+            self.response.write( device.serializeDevice(devicesURL) )
             return
         except:
             self.response.write(json.dumps({"error": "Cannot write response."}));
@@ -145,14 +148,14 @@ class UserHandler(RequestHandler):
             self.response.status_int = 500;
             return
 
-    def delete(self, user_id):
-        print("UserHandler: DELETE 1")
+    def delete(self, device_id):
+        print("DeviceHandler: DELETE 1")
 
-        # Convert user_id to ndb KEY
+        # Convert device_id to ndb KEY
         try:
-            user_key = ndb.Key(urlsafe=user_id);
-            user = user_key.get()
-            if (user == None):
+            device_key = ndb.Key(urlsafe=device_id);
+            device = device_key.get()
+            if (device == None):
                 raise TypeError
         except:
             self.response.status_int = 204;
@@ -188,7 +191,7 @@ class UserHandler(RequestHandler):
     #
         # Delete boat entity
         try:
-            user_key.delete();
+            device_key.delete();
         except:
             self.response.write(json.dumps({"error": "Cannot delete entity."}));
             self.response.headers.add('Content-Type', "application/json");
