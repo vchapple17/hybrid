@@ -112,6 +112,11 @@ class User(ndb.Model):
 
         return True
 
+    def canDelete(self):
+        if (device_id == None) and (start_datetime == None):
+            return True
+        return False
+        
     @classmethod
     def validateUserPostRequest(self, obj):
         try:

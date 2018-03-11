@@ -99,8 +99,12 @@ class RentalAPITestCase( unittest.TestCase ):
             self.assertEqual(q[n].is_rented, False )
 
             # Add Device to User via PUT
-            url = baseURL
-            url += usersPath + "/" + user_id + devicesPath + "/" + device_id
+            if (n %2 == 0):
+                url = baseURL
+                url += usersPath + "/" + user_id + devicesPath + "/" + device_id
+            elif (n %2 == 1):
+                url = baseURL
+                url += devicesPath + "/" + device_id + usersPath + "/" + user_id
 
             response = self.testapp.put(url)
 

@@ -159,45 +159,16 @@ class UserHandler(RequestHandler):
             return
 
 
-        # occupied_slip
-    #     try:
-    #         # Find Boat's Slip and Remove
-    #         query = Slip.query()
-    #         slips = query.filter(Slip._properties["current_boat"] == boat_id).fetch()
-    #
-    #         if (len(slips) == 1):
-    #             slip = slips[0];
-    #
-    #             # Backup Boat URL and ID for Slip
-    #             boatURL = slip.current_boat_url
-    #             boatDate = slip.arrival_date
-    #
-    #             # Update Slip
-    #             slip.current_boat = None;
-    #             slip.current_boat_url = None;
-    #             slip.arrival_date = None;
-    #
-    #             slip.put()
-    #             print("UPDATED SLIP", slip)
-    #     except:
-    #         # Send Response
-    #         self.response.write(json.dumps({"error": "Cannot update slip."}));
-    #         self.response.headers.add('Content-Type', "application/json");
-    #         self.response.status_int = 500;
-    #         return
-    #
-        # Delete boat entity
+        # Delete entity
         try:
+            # Will not delete user if user has a device
+            if user.canDelete() == False:
+                raise TypeError
             user_key.delete();
         except:
             self.response.write(json.dumps({"error": "Cannot delete entity."}));
             self.response.headers.add('Content-Type', "application/json");
-            self.response.status_int = 404;
-            #
-            # slip.current_boat = boat_id;
-            # slip.current_boat_url = boatURL;
-            # slip.arrival_date = boatDate;
-            # slip.put()
+            self.response.status_int = 400;
             return
 
         # # Send response that boat is deleted
