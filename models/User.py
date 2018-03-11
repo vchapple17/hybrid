@@ -37,7 +37,7 @@ class User(ndb.Model):
             return None
 
         # Check user does not already have a device
-        if (self.device_id  != None):
+        if (self.device_id != None) and (self.device_id != device_id):
             return None
 
         # Verify Device Exists and is available
@@ -46,7 +46,7 @@ class User(ndb.Model):
             device = device_key.get()
             if (device == None):
                 raise TypeError
-            if (device.is_rented == True):
+            if (device.is_rented == True) and (self.device_id  != device_id):
                 raise TypeError
         except(TypeError):
             # device does not exist or is unavailable
