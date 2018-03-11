@@ -12,7 +12,7 @@ class Group(messages.Enum):
 
 def randomGroupEnum():
     random.seed(0);
-    v = random.randrange(2017, 2021)
+    v = random.randrange(2017, 2022)
     if v == 2017:
         return Group.STAFF
     elif v == 2018:

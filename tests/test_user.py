@@ -14,10 +14,8 @@ import json
 from randomData import ValidData
 from const import MAX_STRING_LENGTH, NUM_TESTS, usersURL
 from User import User
-from Group import Group, randomGroupEnumString, randomGroupEnum
+from Group import Group, randomGroupEnum, randomGroupEnumString
 
-# class TestEntityGroupRoot( ndb.model ):
-#     pass
 
 def GetEntityViaMemcache(entity_key):
     # Get from memcache, then try datastore
