@@ -14,10 +14,15 @@ import webtest
 import webapp2
 from webapp2 import Route
 from DeviceHandler import DevicesHandler, DeviceHandler
+from UserHandler import UsersHandler, UserHandler
+from RentalHandler import RentalHandler
 from webapp2_extras.routes import RedirectRoute, PathPrefixRoute
 
 from randomData import ValidData
-from const import MAX_STRING_LENGTH, NUM_TESTS, devicesPath, devicesURL
+from const import MAX_STRING_LENGTH, NUM_TESTS, devicesPath, devicesURL, usersPath, usersURL, baseURL
+from User import User
+from Device import Device
+from Group import randomGroupEnumString
 from Color import randomColorEnumString
 from DeviceModel import randomDeviceModelEnumString
 
@@ -28,10 +33,22 @@ class DeviceAPITestCase( unittest.TestCase ):
         new_allowed_methods = allowed_methods.union(('PATCH',))
         webapp2.WSGIApplication.allowed_methods = new_allowed_methods
         app = webapp2.WSGIApplication([
+            Route('/users', handler=UsersHandler, name='users'),
+            PathPrefixRoute( '/users',[
+                Route('/', handler=UsersHandler, name='users'),
+                Route('/<user_id:([A-Z]|[a-z]|[0-9]|[-._])+(/)?>', handler=UserHandler, name='user'),
+
+                Route('/<user_id:([A-Z]|[a-z]|[0-9]|[-._])+>/devices/<device_id:([A-Z]|[a-z]|[0-9]|[-._])+(/)?>', handler=RentalHandler, name='rental'),
+
+            ]),
             Route('/devices', handler=DevicesHandler, name='devices'),
             PathPrefixRoute( '/devices',[
                 Route('/', handler=DevicesHandler, name='devices'),
-                Route('/<device_id:([A-Z]|[a-z]|[0-9]|[-._])+(/)?>', handler=DeviceHandler, name='device'),]), ])
+                Route('/<device_id:([A-Z]|[a-z]|[0-9]|[-._])+(/)?>', handler=DeviceHandler, name='device'),
+
+                Route('/<device_id:([A-Z]|[a-z]|[0-9]|[-._])+>/users/<user_id:([A-Z]|[a-z]|[0-9]|[-._])+(/)?>', handler=RentalHandler, name='rental'),
+            ]),
+        ])
         self.testapp = webtest.TestApp(app)
         self.testbed = testbed.Testbed()
         self.testbed.activate()
@@ -485,3 +502,125 @@ class DeviceAPITestCase( unittest.TestCase ):
             # Check Object Not there
             response = self.testapp.get(payload['url'], expect_errors=True);
             self.assertEqual(response.status_int, 404)
+
+    def testDeleteDevicesInDatastoreFAIL(self):
+        # Create, Verify, Check out Device, refuse Delete Verify
+        for n in xrange(NUM_TESTS):
+            url = devicesURL
+            # Add New
+            data = {
+                "color": randomColorEnumString(),
+                "model": randomDeviceModelEnumString(),
+                "serial_no": self.v.validRandomString(MAX_STRING_LENGTH)
+            }
+            response = self.testapp.post_json(devicesPath, data)
+
+            # Check Return
+            payload = response.json
+            self.assertEqual("error" in payload.keys(), False)
+            self.assertEqual("id" in payload.keys(), True)
+            self.assertEqual("url" in payload.keys(), True)
+            self.assertEqual("color" in payload.keys(), True)
+            self.assertEqual("model" in payload.keys(), True)
+            self.assertEqual("serial_no" in payload.keys(), True)
+            self.assertEqual("is_rented" in payload.keys(), True)
+            self.assertEqual(payload['color'], data["color"])
+            self.assertEqual(payload['model'], data["model"])
+            self.assertEqual(payload['serial_no'], data["serial_no"])
+            self.assertEqual(payload['is_rented'], False)
+            device_id = payload["id"]
+            self.assertEqual(payload['url'], devicesURL + "/" + device_id)
+
+            # Check Object added to GET 1
+            # AFTER: GET ONE Devices via payload['url']
+            response = self.testapp.get(payload['url']);
+            post_payload = response.json
+            obj = json.loads(post_payload)
+            self.assertEqual('error' in obj.keys(), False)
+            self.assertEqual("id" in obj.keys(), True)
+            self.assertEqual("url" in obj.keys(), True)
+            self.assertEqual('color' in obj.keys(), True)
+            self.assertEqual('model' in obj.keys(), True)
+            self.assertEqual('serial_no' in obj.keys(), True)
+            self.assertEqual('is_rented' in obj.keys(), True)
+            self.assertEqual(data['color'], obj['color'])
+            self.assertEqual(data['model'], obj['model'])
+            self.assertEqual(data['serial_no'], obj['serial_no'])
+            self.assertEqual(False, obj['is_rented'])
+
+            # Add New
+            data2 = {
+                "first_name": self.v.validRandomString( MAX_STRING_LENGTH ),
+                "family_name": self.v.validRandomString( MAX_STRING_LENGTH ),
+                "group": randomGroupEnumString()
+            }
+            response = self.testapp.post_json(usersPath, data2)
+
+            # Check Return
+            payload = response.json
+            self.assertEqual("error" in payload.keys(), False)
+            self.assertEqual("id" in payload.keys(), True)
+            self.assertEqual("url" in payload.keys(), True)
+            self.assertEqual("first_name" in payload.keys(), True)
+            self.assertEqual("family_name" in payload.keys(), True)
+            self.assertEqual("group" in payload.keys(), True)
+            self.assertEqual("device_id" in payload.keys(), True)
+            self.assertEqual("start_datetime" in payload.keys(), True)
+            self.assertEqual(payload['first_name'], data2["first_name"])
+            self.assertEqual(payload['family_name'], data2["family_name"])
+            self.assertEqual(payload['group'], data2["group"])
+            self.assertEqual(payload['device_id'], None)
+            self.assertEqual(payload['start_datetime'], None)
+            user_id = payload["id"]
+            self.assertEqual(payload['url'], usersURL + "/" + user_id)
+
+
+            # Check out device
+            url = baseURL
+            url += usersPath + "/" + user_id + devicesPath + "/" + device_id
+
+            response = self.testapp.put(url)
+
+            # Check Return
+            self.assertEqual(response.status_int, 204)
+
+            # Test Changes Occurred
+            # Verify User has device ID
+            q = User.query().fetch(n+1)
+            self.assertEqual(q[n].first_name, data2["first_name"])
+            self.assertEqual(q[n].family_name, data2["family_name"])
+            self.assertEqual(str(q[n].group), data2["group"])
+            self.assertEqual(q[n].device_id, device_id)
+            self.assertNotEqual(q[n].start_datetime, None)
+            start_datetime = q[n].start_datetime
+
+            # Verify Device is rented
+            q = Device.query().fetch(n+1)
+            device_id = q[n].key.urlsafe()
+            self.assertEqual(str(q[n].color), data["color"])
+            self.assertEqual(str(q[n].model), data["model"])
+            self.assertEqual(q[n].serial_no, data["serial_no"])
+            self.assertEqual(q[n].is_rented, True )
+
+            # TRY TO DELETE DEVICE
+            url = devicesURL + "/" + device_id
+            response = self.testapp.delete(url, expect_errors=True)
+            self.assertEqual(response.status_int, 400)
+
+            # Check DEVICE IS still there
+            # Check Object added to GET 1
+            # AFTER: GET ONE Users via payload['url']
+            response = self.testapp.get(url);
+            post_payload = response.json
+            obj = json.loads(post_payload)
+            self.assertEqual('error' in obj.keys(), False)
+            self.assertEqual("id" in obj.keys(), True)
+            self.assertEqual("url" in obj.keys(), True)
+            self.assertEqual('color' in obj.keys(), True)
+            self.assertEqual('model' in obj.keys(), True)
+            self.assertEqual('serial_no' in obj.keys(), True)
+            self.assertEqual('is_rented' in obj.keys(), True)
+            self.assertEqual(data['color'], obj['color'])
+            self.assertEqual(data['model'], obj['model'])
+            self.assertEqual(data['serial_no'], obj['serial_no'])
+            self.assertEqual(True, obj['is_rented'])

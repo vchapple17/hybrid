@@ -109,3 +109,8 @@ class Device(ndb.Model):
         except:
             print("Error: validateDevicePatchRequest")
             return False
+
+    def canDelete(self):
+        if (self.is_rented == False):
+            return True
+        return False
