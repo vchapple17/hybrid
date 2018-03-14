@@ -67,9 +67,9 @@ class UserDatastoreTestCase( unittest.TestCase ):
             user.start_datetime = self.v.validRandomDateTime()
             user_key = user.put()
             q = User.query().fetch(n+1)
-            v = q[n].serializeUser(usersURL)
-            v_json = json.loads(v)
-            self.assertNotEqual(v, None)
+            v_json = q[n].serializeUser(usersURL)
+            # v_json = json.loads(v)
+            self.assertNotEqual(v_json, None)
             self.assertEqual(v_json["first_name"], q[n].first_name)
 
     def testSerializeUserWithOutDevice(self):
@@ -80,9 +80,9 @@ class UserDatastoreTestCase( unittest.TestCase ):
             user.group = randomGroupEnum()
             user_key = user.put()
             q = User.query().fetch(n+1)
-            v = q[n].serializeUser(usersURL)
-            v_json = json.loads(v)
-            self.assertNotEqual(v, None)
+            v_json = q[n].serializeUser(usersURL)
+            # v_json = json.loads(v)
+            self.assertNotEqual(v_json, None)
             self.assertEqual(v_json["first_name"], q[n].first_name)
 
     def testValidateUserPostRequest(self):

@@ -28,7 +28,7 @@ class User(ndb.Model):
             ret["start_datetime"] = datetime.strftime(self.start_datetime, "%m/%d/%y %H:%M");
         else:
             ret["start_datetime"] = None
-        return json.dumps(ret);
+        return ret;
 
     def checkOutDevice(self, device_id, start_datetime):
         if (type(device_id) != type("")):
@@ -113,10 +113,10 @@ class User(ndb.Model):
         return True
 
     def canDelete(self):
-        if (device_id == None) and (start_datetime == None):
+        if (self.device_id == None) and (self.start_datetime == None):
             return True
         return False
-        
+
     @classmethod
     def validateUserPostRequest(self, obj):
         try:

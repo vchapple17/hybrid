@@ -61,7 +61,7 @@ class DevicesHandler(RequestHandler):
         try:
             self.response.content_type = 'application/json'
             self.response.status_int = 201;
-            self.response.write( device.serializeDevice(devicesURL) )
+            self.response.write( json.dumps(device.serializeDevice(devicesURL)) )
         except:
             self.response.write(json.dumps({"error": "Cannot write response."}));
             self.response.headers.add('Content-Type', "application/json");
@@ -139,7 +139,7 @@ class DeviceHandler(RequestHandler):
         try:
             self.response.content_type = 'application/json'
             self.response.status_int = 201;
-            self.response.write( device.serializeDevice(devicesURL) )
+            self.response.write( json.dumps(device.serializeDevice(devicesURL)))
             return
         except:
             self.response.write(json.dumps({"error": "Cannot write response."}));

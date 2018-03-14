@@ -166,7 +166,8 @@ class UserAPITestCase( unittest.TestCase ):
             pre_payload = response.json
             self.assertEqual(type(pre_payload), list);
             for i in pre_payload:
-                obj = json.loads(i)
+                # obj = json.loads(i)
+                obj = i
                 self.assertEqual(type(obj), dict)
                 self.assertEqual('error' in obj.keys(), False)
                 self.assertEqual("id" in payload.keys(), True)
@@ -211,7 +212,8 @@ class UserAPITestCase( unittest.TestCase ):
             post_payload = response.json
             self.assertEqual(type(post_payload), list);
             for i in xrange(len(post_payload)):
-                obj = json.loads(post_payload[i])
+                # obj = json.loads(post_payload[i])
+                obj = post_payload[i]
                 self.assertEqual(type(obj), dict)
                 self.assertEqual('error' in obj.keys(), False)
                 self.assertEqual("id" in payload.keys(), True)
@@ -224,7 +226,8 @@ class UserAPITestCase( unittest.TestCase ):
                 self.assertEqual('device_id' in obj.keys(), True)
                 self.assertEqual('start_datetime' in obj.keys(), True)
                 if i < len(pre_payload):
-                    pre_obj = json.loads(pre_payload[i])
+                    # pre_obj = json.loads(pre_payload[i])
+                    pre_obj = pre_payload[i]
                     self.assertEqual(pre_obj['first_name'], obj['first_name'])
                     self.assertEqual(pre_obj['family_name'], obj['family_name'])
                     self.assertEqual(pre_obj['group'], obj['group'])
@@ -271,11 +274,11 @@ class UserAPITestCase( unittest.TestCase ):
             # Check Object added to GET 1
             # AFTER: GET ONE Users via payload['url']
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj = json.loads(post_payload)
+            obj = response.json
+            # obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
-            self.assertEqual("id" in payload.keys(), True)
-            self.assertEqual("url" in payload.keys(), True)
+            self.assertEqual("id" in obj.keys(), True)
+            self.assertEqual("url" in obj.keys(), True)
             user_id = payload["id"]
             self.assertEqual(payload['url'], usersURL + "/" + user_id)
             self.assertEqual('first_name' in obj.keys(), True)
@@ -321,8 +324,8 @@ class UserAPITestCase( unittest.TestCase ):
             # Check Object added to GET 1
             # AFTER: GET ONE Users via payload['url']
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj = json.loads(post_payload)
+            obj = response.json
+            # obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
             self.assertEqual('first_name' in obj.keys(), True)
             self.assertEqual('family_name' in obj.keys(), True)
@@ -352,11 +355,11 @@ class UserAPITestCase( unittest.TestCase ):
 
             # Check Object changed
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj2 = json.loads(post_payload)
+            obj2 = response.json
+            # obj2 = json.loads(post_payload)
             self.assertEqual('error' in obj2.keys(), False)
-            self.assertEqual("id" in payload.keys(), True)
-            self.assertEqual("url" in payload.keys(), True)
+            self.assertEqual("id" in obj2.keys(), True)
+            self.assertEqual("url" in obj2.keys(), True)
             user_id = payload["id"]
             self.assertEqual(payload['url'], usersURL + "/" + user_id)
             self.assertEqual('first_name' in obj2.keys(), True)
@@ -413,11 +416,11 @@ class UserAPITestCase( unittest.TestCase ):
             # Check Object added to GET 1
             # AFTER: GET ONE Users via payload['url']
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj = json.loads(post_payload)
+            obj = response.json
+            # obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
-            self.assertEqual("id" in payload.keys(), True)
-            self.assertEqual("url" in payload.keys(), True)
+            self.assertEqual("id" in obj.keys(), True)
+            self.assertEqual("url" in obj.keys(), True)
             user_id = payload["id"]
             self.assertEqual(payload['url'], usersURL + "/" + user_id)
             self.assertEqual('first_name' in obj.keys(), True)
@@ -449,11 +452,11 @@ class UserAPITestCase( unittest.TestCase ):
 
             # Check Object did NOT changed
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj2 = json.loads(post_payload)
+            obj2 = response.json
+            # obj2 = json.loads(post_payload)
             self.assertEqual('error' in obj2.keys(), False  )
-            self.assertEqual("id" in payload.keys(), True)
-            self.assertEqual("url" in payload.keys(), True)
+            self.assertEqual("id" in obj2.keys(), True)
+            self.assertEqual("url" in obj2.keys(), True)
             user_id = payload["id"]
             self.assertEqual(payload['url'], usersURL + "/" + user_id)
             self.assertEqual('first_name' in obj2.keys(), True)
@@ -503,13 +506,13 @@ class UserAPITestCase( unittest.TestCase ):
             # Check Object added to GET 1
             # AFTER: GET ONE Users via payload['url']
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj = json.loads(post_payload)
+            obj = response.json
+            # obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
-            self.assertEqual("id" in payload.keys(), True)
-            self.assertEqual("url" in payload.keys(), True)
+            self.assertEqual("id" in obj.keys(), True)
+            self.assertEqual("url" in obj.keys(), True)
             user_id = payload["id"]
-            self.assertEqual(payload['url'], usersURL + "/" + user_id)
+            self.assertEqual(obj['url'], usersURL + "/" + user_id)
             self.assertEqual('first_name' in obj.keys(), True)
             self.assertEqual('family_name' in obj.keys(), True)
             self.assertEqual('group' in obj.keys(), True)
@@ -522,7 +525,7 @@ class UserAPITestCase( unittest.TestCase ):
             self.assertEqual(None, obj['start_datetime'])
 
             # Delete Object
-            response = self.testapp.delete(payload['url'])
+            response = self.testapp.delete(obj['url'])
             self.assertEqual(response.status_int, 204)
 
             # Check Object Not there
@@ -618,8 +621,8 @@ class UserAPITestCase( unittest.TestCase ):
             # Check Object added to GET 1
             # AFTER: GET ONE Users via payload['url']
             response = self.testapp.get(url);
-            post_payload = response.json
-            obj = json.loads(post_payload)
+            obj = response.json
+            # obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
             self.assertEqual("id" in obj.keys(), True)
             self.assertEqual("url" in obj.keys(), True)

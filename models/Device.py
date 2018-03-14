@@ -23,7 +23,8 @@ class Device(ndb.Model):
             "serial_no": self.serial_no,
             "is_rented": self.is_rented
         }
-        return json.dumps(ret);
+        # return json.dumps(ret);
+        return ret;
 
     @classmethod
     def validateDevicePostRequest(self, obj):

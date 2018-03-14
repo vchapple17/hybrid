@@ -64,9 +64,9 @@ class DeviceDatastoreTestCase( unittest.TestCase ):
             device.is_rented = (n%2==0) # Toggle is_rented
             device_key = device.put()
             q = Device.query().fetch(n+1)
-            v = q[n].serializeDevice(devicesURL)
-            v_json = json.loads(v)
-            self.assertNotEqual(v, None)
+            v_json = q[n].serializeDevice(devicesURL)
+            # v_json = json.loads(v)
+            self.assertNotEqual(v_json, None)
             self.assertEqual(v_json["id"], device_key.urlsafe())
             self.assertEqual(v_json["color"], getColorStringFromEnum(q[n].color))
             self.assertEqual(v_json["model"], getDeviceModelStringFromEnum(q[n].model))

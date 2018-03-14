@@ -167,7 +167,8 @@ class DeviceAPITestCase( unittest.TestCase ):
             pre_payload = response.json
             self.assertEqual(type(pre_payload), list);
             for i in pre_payload:
-                obj = json.loads(i)
+                # obj = json.loads(i)
+                obj = i
                 self.assertEqual(type(obj), dict)
                 self.assertEqual('error' in obj.keys(), False)
                 self.assertEqual('url' in obj.keys(), True)
@@ -211,7 +212,8 @@ class DeviceAPITestCase( unittest.TestCase ):
             post_payload = response.json
             self.assertEqual(type(post_payload), list);
             for i in xrange(len(post_payload)):
-                obj = json.loads(post_payload[i])
+                # obj = json.loads(post_payload[i])
+                obj = post_payload[i]
                 self.assertEqual(type(obj), dict)
                 self.assertEqual('error' in obj.keys(), False)
                 self.assertEqual('color' in obj.keys(), True)
@@ -219,7 +221,8 @@ class DeviceAPITestCase( unittest.TestCase ):
                 self.assertEqual('serial_no' in obj.keys(), True)
                 self.assertEqual('is_rented' in obj.keys(), True)
                 if i < len(pre_payload):
-                    pre_obj = json.loads(pre_payload[i])
+                    # pre_obj = json.loads(pre_payload[i])
+                    pre_obj = pre_payload[i]
                     self.assertEqual(pre_obj['color'], obj['color'])
                     self.assertEqual(pre_obj['model'], obj['model'])
                     self.assertEqual(pre_obj['serial_no'], obj['serial_no'])
@@ -262,8 +265,8 @@ class DeviceAPITestCase( unittest.TestCase ):
             # Check Object added to GET 1
             # AFTER: GET ONE Devices via payload['url']
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj = json.loads(post_payload)
+            obj = response.json
+            # obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
             self.assertEqual('id' in obj.keys(), True)
             self.assertEqual('url' in obj.keys(), True)
@@ -308,11 +311,11 @@ class DeviceAPITestCase( unittest.TestCase ):
             # Check Object added to GET 1
             # AFTER: GET ONE Devices via payload['url']
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj = json.loads(post_payload)
+            obj = response.json
+            # obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
-            self.assertEqual("id" in payload.keys(), True)
-            self.assertEqual("url" in payload.keys(), True)
+            self.assertEqual("id" in obj.keys(), True)
+            self.assertEqual("url" in obj.keys(), True)
             device_id = payload["id"]
             self.assertEqual(payload['url'], devicesURL + "/" + device_id)
             self.assertEqual('color' in obj.keys(), True)
@@ -341,8 +344,8 @@ class DeviceAPITestCase( unittest.TestCase ):
 
             # Check Object changed
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj2 = json.loads(post_payload)
+            obj2 = response.json
+            # obj2 = json.loads(post_payload)
             self.assertEqual('error' in obj2.keys(), False)
             self.assertEqual("id" in obj2.keys(), True)
             self.assertEqual("url" in obj2.keys(), True)
@@ -399,11 +402,11 @@ class DeviceAPITestCase( unittest.TestCase ):
             # Check Object added to GET 1
             # AFTER: GET ONE Devices via payload['url']
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj = json.loads(post_payload)
+            obj = response.json
+            # obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
-            self.assertEqual("id" in payload.keys(), True)
-            self.assertEqual("url" in payload.keys(), True)
+            self.assertEqual("id" in obj.keys(), True)
+            self.assertEqual("url" in obj.keys(), True)
             device_id = payload["id"]
             self.assertEqual(payload['url'], devicesURL + "/" + device_id)
             self.assertEqual('color' in obj.keys(), True)
@@ -433,13 +436,13 @@ class DeviceAPITestCase( unittest.TestCase ):
 
             # Check Object did NOT changed
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj2 = json.loads(post_payload)
+            obj2 = response.json
+            # obj2 = json.loads(post_payload)
             self.assertEqual('error' in obj2.keys(), False  )
-            self.assertEqual("id" in payload.keys(), True)
-            self.assertEqual("url" in payload.keys(), True)
+            self.assertEqual("id" in obj2.keys(), True)
+            self.assertEqual("url" in obj2.keys(), True)
             device_id = payload["id"]
-            self.assertEqual(payload['url'], devicesURL + "/" + device_id)
+            self.assertEqual(obj2['url'], devicesURL + "/" + device_id)
             self.assertEqual('color' in obj2.keys(), True)
             self.assertEqual('model' in obj2.keys(), True)
             self.assertEqual('serial_no' in obj2.keys(), True)
@@ -481,11 +484,11 @@ class DeviceAPITestCase( unittest.TestCase ):
             # Check Object added to GET 1
             # AFTER: GET ONE Devices via payload['url']
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj = json.loads(post_payload)
+            obj = response.json
+            # obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
-            self.assertEqual("id" in payload.keys(), True)
-            self.assertEqual("url" in payload.keys(), True)
+            self.assertEqual("id" in obj.keys(), True)
+            self.assertEqual("url" in obj.keys(), True)
             self.assertEqual('color' in obj.keys(), True)
             self.assertEqual('model' in obj.keys(), True)
             self.assertEqual('serial_no' in obj.keys(), True)
@@ -534,8 +537,8 @@ class DeviceAPITestCase( unittest.TestCase ):
             # Check Object added to GET 1
             # AFTER: GET ONE Devices via payload['url']
             response = self.testapp.get(payload['url']);
-            post_payload = response.json
-            obj = json.loads(post_payload)
+            obj = response.json
+            # obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
             self.assertEqual("id" in obj.keys(), True)
             self.assertEqual("url" in obj.keys(), True)
@@ -566,6 +569,7 @@ class DeviceAPITestCase( unittest.TestCase ):
             self.assertEqual("group" in payload.keys(), True)
             self.assertEqual("device_id" in payload.keys(), True)
             self.assertEqual("start_datetime" in payload.keys(), True)
+
             self.assertEqual(payload['first_name'], data2["first_name"])
             self.assertEqual(payload['family_name'], data2["family_name"])
             self.assertEqual(payload['group'], data2["group"])
@@ -611,8 +615,8 @@ class DeviceAPITestCase( unittest.TestCase ):
             # Check Object added to GET 1
             # AFTER: GET ONE Users via payload['url']
             response = self.testapp.get(url);
-            post_payload = response.json
-            obj = json.loads(post_payload)
+            obj = response.json
+            # obj = json.loads(post_payload)
             self.assertEqual('error' in obj.keys(), False)
             self.assertEqual("id" in obj.keys(), True)
             self.assertEqual("url" in obj.keys(), True)
