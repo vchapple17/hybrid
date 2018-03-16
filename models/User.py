@@ -66,6 +66,7 @@ class User(ndb.Model):
         try:
             self.device_id = device_id
             self.start_datetime = start_datetime
+            self.put()
         except:
             # Error updating device
             return None
