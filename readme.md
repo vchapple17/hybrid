@@ -1,14 +1,64 @@
+# Inventory API
 
-# api
+# Setup
 
-## Deploy webapp2
+## Local
 
+Install and set up Google Cloud SDK locally [https://cloud.google.com/sdk/downloads].
 
-## Requirements
-* The backend must have at least 1 entity with 4 or more properties
-* The backend must also meet at least one of the following requirements
-    * User accounts are supported (ie. there is data tied to specific users that only they can see or modify) and they are tied to a 3rd party provider. You could use OAuth to access basic account info or you could use something like OpenIDConnect for authentication. You should not simply handle all account creation and management yourself.
-    * There is additional entity with 4 or more properties that is related to the original entity and the items can be added or removed from the relationship (like books being checked out to customers)
-* It needs to model different data than the one for the homework
-* It must use a non-relational database on a cloud provider (Google App Engine with NDB is recommended)
-* It must meet REST requirements of using resource based URLs and representations of things via links
+## Google Cloud
+
+After you create your project and register it through Google, you can easily upload files and deploy apps using the Google Cloud Shell.[https://console.cloud.google.com/home/dashboard]
+
+# Deployment
+To deploy your app for testing and development:
+
+```
+dev_appserver.py app.yaml
+```
+
+To deploy the app for testing and development with a clean datastore:
+
+```
+dev_appserver.py --clear_datastore=yes app.yaml
+```
+
+To deploy the app to a server using Google Cloud Shell:
+```
+gcloud app deploy app.yaml
+```
+
+# Documentation
+
+See Documentation: [https://github.com/vchapple17/hybrid/blob/master/doc.md]
+
+# Endpoints
+
+## User
+
+```
+GET /users/
+POST /users/
+
+GET /users/{user_id}
+PATCH /users/{user_id}
+DELETE /users/{user_id}
+```
+
+## Device
+
+```
+GET /devices/
+POST /devices/
+
+GET /devices/{slip_id}
+PATCH /devices/{slip_id}
+DELETE /devices/{slip_id}
+```
+
+## Check Out and Check In Device
+
+```
+PUT /users/{user_id}/devices/{device_id}
+DELETE /users/{user_id}/devices/{device_id}
+```
