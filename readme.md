@@ -51,9 +51,9 @@ DELETE /users/{user_id}
 GET /devices/
 POST /devices/
 
-GET /devices/{slip_id}
-PATCH /devices/{slip_id}
-DELETE /devices/{slip_id}
+GET /devices/{device_id}
+PATCH /devices/{device_id}
+DELETE /devices/{device_id}
 ```
 
 ## Check Out and Check In Device
